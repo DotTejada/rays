@@ -1,11 +1,12 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include "raylib.h"
 #include "stdio.h"
 #include "stdbool.h"
-#include <string.h>
+#include "string.h"
 
 #define unimplemented DrawText("Not yet implemented", 200, 150, 40, GREEN);
 
-#define scale 10
+#define scale 40
 #define screenWidth 800
 #define screenHeight 600
 #define cWidth (screenWidth / scale) // 16
@@ -136,6 +137,17 @@ int main() {
         }
 
         if (IsKeyPressed(KEY_SPACE)) { run = !run; }
+        if (IsKeyPressed(KEY_S)) {
+            FILE *f = fopen("save.gol", "w");
+            for (int row = 0; row < cHeight; row++) {
+                for (int col = 0; col < cWidth; col++) {
+                    fprintf(f, "%d", board[col][row]);
+                }
+                fprintf(f, "\n");
+            }
+            fclose(f);
+            DrawText("Saved!", 0, 0, 20, GREEN);
+        }
 
         if (!run) {
             //Draws the board statically if not running
@@ -167,18 +179,10 @@ int main() {
         EndDrawing();
     }
     CloseWindow();
+
     for (int row = 0; row < cHeight; row++) {
         for (int col = 0; col < cWidth; col++) {
             printf("%d", board[col][row]);
-        }
-        printf("\n");
-    }
-
-    printf("Now here is the copied one\n");
-
-    for (int row = 0; row < cHeight; row++) {
-        for (int col = 0; col < cWidth; col++) {
-            printf("%d", copy[col][row]);
         }
         printf("\n");
     }
