@@ -14,7 +14,6 @@
 
 bool board[cWidth][cHeight] = {false};
 bool copy[cWidth][cHeight] = {false};
-bool run = false;
 
 bool cellnext(int col, int row) {
     int count = 0;
@@ -106,6 +105,47 @@ bool cellnext(int col, int row) {
     }
 }
 
+void DrawBoard() {
+    //Draws the board statically if not running
+    for (int row = 0; row < cHeight; row++) {
+        for (int col = 0; col < cWidth; col++) {
+            if (board[col][row]) {
+                DrawRectangle(col * scale + 1, row * scale + 1, 
+                              scale - 2, scale - 2, WHITE);
+            }
+        }
+    }
+}
+
+void UpdateBoard() {
+    //Updates board
+    for (int row = 0; row < cHeight; row++) {
+        for (int col = 0; col < cWidth; col++) {
+            copy[col][row] = cellnext(col, row);
+        }
+    }
+    memcpy(board, copy, sizeof(bool) * cWidth * cHeight);
+    //Then draws it
+    for (int row = 0; row < cHeight; row++) {
+        for (int col = 0; col < cWidth; col++) {
+            if (board[col][row]) {
+                DrawRectangle(col * scale + 1, row * scale + 1, 
+                              scale - 2, scale - 2, WHITE);
+            }
+        }
+    }
+}
+
+bool start = false;
+int steps = 1;
+
+enum Mode {  
+    RUN,
+    STEP
+};
+
+enum Mode mode = RUN;
+
 int main() {
     InitWindow(screenWidth, screenHeight, "Game of Life");
     Image glider = LoadImage("glider.png");
@@ -136,8 +176,12 @@ int main() {
             board[xpos][ypos] = !board[xpos][ypos];
         }
 
-        if (IsKeyPressed(KEY_SPACE)) { run = !run; }
+        if (IsKeyPressed(KEY_SPACE)) { start = !start; }
+        if (IsKeyPressed(KEY_ONE)) { mode = RUN; }
+        if (IsKeyPressed(KEY_TWO)) { mode = STEP; }
         if (IsKeyPressed(KEY_S)) {
+            //Save
+            //TODO: Support multiple save files
             FILE *save = fopen("save.gol", "w");
             if (save == NULL) {
                 fprintf(stderr, "Could not create or write to save file");
@@ -153,6 +197,7 @@ int main() {
             DrawText("Saved!", 0, 0, 20, GREEN);
         }
         if (IsKeyPressed(KEY_L)) {
+            //Load
             FILE *load = fopen("save.gol", "r");
             if (load == NULL) {
                 fprintf(stderr, "No save file");
@@ -186,47 +231,38 @@ int main() {
             }
         }
 
-        if (!run) {
-            //Draws the board statically if not running
-            for (int row = 0; row < cHeight; row++) {
-                for (int col = 0; col < cWidth; col++) {
-                    if (board[col][row]) {
-                        DrawRectangle(col * scale + 1, row * scale + 1, 
-                                      scale - 2, scale - 2, WHITE);
-                    }
-                }
+        if (mode == RUN) {
+            if (!start) {
+                DrawBoard();
+                DrawText("RUN: Stopped", 0, screenHeight - 20, 20, GREEN);
+            } else if (start) {
+                UpdateBoard();
+                DrawText("RUN: Running", 0, screenHeight - 20, 20, GREEN);
             }
-            DrawText("Stopped...", 0, screenHeight - 20, 20, GREEN);
-        } else {
-            //Updates board each frame
-            for (int row = 0; row < cHeight; row++) {
-                for (int col = 0; col < cWidth; col++) {
-                    copy[col][row] = cellnext(col, row);
-                }
-            }
-            memcpy(board, copy, sizeof(bool) * cWidth * cHeight);
-            //Then draws it
-            for (int row = 0; row < cHeight; row++) {
-                for (int col = 0; col < cWidth; col++) {
-                    if (board[col][row]) {
-                        DrawRectangle(col * scale + 1, row * scale + 1, 
-                                      scale - 2, scale - 2, WHITE);
-                    }
-                }
-            }
-            DrawText("Running...", 0, screenHeight - 20, 20, GREEN);
         }
-        
+        if (mode == STEP) {
+            if (!start) {
+                DrawBoard();
+                DrawText("STEP: Stopped", 0, screenHeight - 20, 20, GREEN);
+            } else if (start) {
+                for (int s = 0; s < steps; s++) {
+                    //TODO: Support different step intervals
+                    UpdateBoard();
+                    DrawText("STEP: Step", 0, screenHeight - 20, 20, GREEN);
+                }
+                start = false;
+            }
+        }
         EndDrawing();
     }
     CloseWindow();
 
-    for (int row = 0; row < cHeight; row++) {
-        for (int col = 0; col < cWidth; col++) {
-            printf("%d", board[col][row]);
-        }
-        printf("\n");
-    }
+    //for (int row = 0; row < cHeight; row++) {
+    //    for (int col = 0; col < cWidth; col++) {
+    //        printf("%d", board[col][row]);
+    //    }
+    //    printf("\n");
+    //}
 
     return 0;
 }
