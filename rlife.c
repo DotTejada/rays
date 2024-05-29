@@ -12,8 +12,42 @@
 #define cWidth (screenWidth / scale) // 16
 #define cHeight (screenHeight / scale) // 12
 
+//TODO: Support window resizing and dynamic grid resizing
 bool board[cWidth][cHeight] = {false};
 bool copy[cWidth][cHeight] = {false};
+
+bool nextcell(int col, int row) {
+    int count = 0;
+    for (int dy = -1; dy < 2; dy++) {
+        for (int dx = -1; dx < 2; dx++) {
+            if ((col + dx) < 0 || (col + dx) > cWidth - 1) {
+                continue;
+            } else if ((row + dy) < 0 || (row + dy) > cHeight - 1) {
+                continue;
+            } else if (board[col + dx][row + dy]) {
+                count += 1;
+            }
+        }
+    }
+
+    //if alive already
+    if (board[col][row]) {
+        if (count < 2) {
+            return false;
+        } else if (count == 2 || count == 3) {
+            return true;
+        } else {
+            return false;
+        }
+    //if dead already
+    } else { 
+        if (count == 3) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
 
 bool cellnext(int col, int row) {
     int count = 0;
@@ -121,19 +155,10 @@ void UpdateBoard() {
     //Updates board
     for (int row = 0; row < cHeight; row++) {
         for (int col = 0; col < cWidth; col++) {
-            copy[col][row] = cellnext(col, row);
+            copy[col][row] = nextcell(col, row);
         }
     }
     memcpy(board, copy, sizeof(bool) * cWidth * cHeight);
-    //Then draws it
-    for (int row = 0; row < cHeight; row++) {
-        for (int col = 0; col < cWidth; col++) {
-            if (board[col][row]) {
-                DrawRectangle(col * scale + 1, row * scale + 1, 
-                              scale - 2, scale - 2, WHITE);
-            }
-        }
-    }
 }
 
 bool start = false;
@@ -237,6 +262,7 @@ int main() {
                 DrawText("RUN: Stopped", 0, screenHeight - 20, 20, GREEN);
             } else if (start) {
                 UpdateBoard();
+                DrawBoard();
                 DrawText("RUN: Running", 0, screenHeight - 20, 20, GREEN);
             }
         }
@@ -248,6 +274,7 @@ int main() {
                 for (int s = 0; s < steps; s++) {
                     //TODO: Support different step intervals
                     UpdateBoard();
+                    DrawBoard();
                     DrawText("STEP: Step", 0, screenHeight - 20, 20, GREEN);
                 }
                 start = false;
