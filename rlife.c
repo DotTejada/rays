@@ -24,99 +24,11 @@ bool nextcell(int col, int row) {
                 continue;
             } else if ((row + dy) < 0 || (row + dy) > cHeight - 1) {
                 continue;
+            } else if (dx == 0 && dy == 0) {
+                continue;
             } else if (board[col + dx][row + dy]) {
                 count += 1;
             }
-        }
-    }
-
-    //if alive already
-    if (board[col][row]) {
-        if (count < 2) {
-            return false;
-        } else if (count == 2 || count == 3) {
-            return true;
-        } else {
-            return false;
-        }
-    //if dead already
-    } else { 
-        if (count == 3) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-}
-
-bool cellnext(int col, int row) {
-    int count = 0;
-    //first row
-    if (row == 0) {
-        //top left cell
-        if (col == 0) {
-            if (board[col + 1][row]) {count += 1;}
-            if (board[col][row + 1]) {count += 1;}
-            if (board[col + 1][row + 1]) {count += 1;}
-        //middle cells
-        } else if (0 < col && col < cWidth - 1) {
-            if (board[col - 1][row]) {count += 1;}
-            if (board[col + 1][row]) {count += 1;}
-            for (int ix = -1; ix < 2; ix++) {
-                if (board[col + ix][row + 1]) {count += 1;}
-            }
-        //top right cell
-        } else {
-            if (board[col - 1][row]) {count += 1;}
-            if (board[col][row + 1]) {count += 1;}
-            if (board[col - 1][row + 1]) {count += 1;}
-        }
-    //middle rows
-    } else if (0 < row && row < cHeight - 1) {
-        //left edge cell
-        if (col == 0) {
-            if (board[col][row - 1]) {count += 1;}
-            if (board[col][row + 1]) {count += 1;}
-            for (int iy = -1; iy < 2; iy++) {
-                if (board[col + 1][row + iy]) {count += 1;}
-            }
-        //middle cells
-        } else if (0 < col && col < cWidth - 1) {
-            if (board[col - 1][row]) {count += 1;}
-            if (board[col + 1][row]) {count += 1;}
-            for (int a = -1; a < 2; a++) {
-                if (board[col + a][row + 1]) {count += 1;}
-            }
-            for (int b = -1; b < 2; b++) {
-                if (board[col + b][row - 1]) {count += 1;}
-            }
-        //right edge cell
-        } else {
-            if (board[col][row - 1]) {count += 1;}
-            if (board[col][row + 1]) {count += 1;}
-            for (int iz = -1; iz < 2; iz++) {
-                if (board[col - 1][row + iz]) {count += 1;}
-            }
-        }
-    //last row
-    } else {
-        //bottom left cell
-        if (col == 0) {
-            if (board[col + 1][row]) {count += 1;}
-            if (board[col][row - 1]) {count += 1;}
-            if (board[col + 1][row - 1]) {count += 1;}
-        //middle cells
-        } else if (0 < col && col < cWidth - 1) {
-            if (board[col - 1][row]) {count += 1;}
-            if (board[col + 1][row]) {count += 1;}
-            for (int ix = -1; ix < 2; ix++) {
-                if (board[col + ix][row - 1]) {count += 1;}
-            }
-        //bottom right cell
-        } else {
-            if (board[col - 1][row]) {count += 1;}
-            if (board[col][row - 1]) {count += 1;}
-            if (board[col - 1][row - 1]) {count += 1;}
         }
     }
 
