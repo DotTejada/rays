@@ -1,2 +1,11 @@
+FLAGS ?= -lraylib
+RAYLIB_PATH ?= C:/Users/dotdu/raylib-5.0_win64_mingw-w64
+
+ifeq ($(OS),Windows_NT)
+    FLAGS += -lgdi32 -lwinmm
+else
+    FLAGS += -lGL -lm
+endif
+
 all:
-	gcc -o rlife rlife.c -IC:\Users\dotdu\raylib-5.0_win64_mingw-w64\raylib-5.0_win64_mingw-w64\include -LC:\Users\dotdu\raylib-5.0_win64_mingw-w64\raylib-5.0_win64_mingw-w64\lib -lraylib -lgdi32 -lwinmm
+	gcc -o rlife rlife.c -I$(RAYLIB_PATH)/include -L$(RAYLIB_PATH)/lib $(FLAGS)
