@@ -1,5 +1,5 @@
 FLAGS ?= -lraylib
-RAYLIB_PATH ?= C:/Users/dotdu/raylib-5.0_win64_mingw-w64
+RAYLIB_PATH ?= /usr/local
 
 ifeq ($(OS),Windows_NT)
     FLAGS += -lgdi32 -lwinmm
